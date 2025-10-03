@@ -2,15 +2,18 @@ import Airtable from 'airtable'
 
 // 配置 Airtable
 const airtableConfig = {
-  apiKey: process.env.AIRTABLE_API_KEY!,
-  baseId: process.env.AIRTABLE_BASE_ID!,
-  tableId: process.env.AIRTABLE_TABLE_ID!,
+  apiKey: process.env.AIRTABLE_API_KEY || '',
+  baseId: process.env.AIRTABLE_BASE_ID || '',
+  tableId: process.env.AIRTABLE_TABLE_ID || '',
 }
 
-// 初始化 Airtable
-const base = new Airtable({
+// 检查是否有必要的配置
+const hasAirtableConfig = airtableConfig.apiKey && airtableConfig.baseId && airtableConfig.tableId
+
+// 初始化 Airtable (仅在配置完整时)
+const base = hasAirtableConfig ? new Airtable({
   apiKey: airtableConfig.apiKey,
-}).base(airtableConfig.baseId)
+}).base(airtableConfig.baseId) : null
 
 // 云途物流9个渠道对应的表ID
 export const YUNTU_CHANNEL_TABLES = {
@@ -26,7 +29,7 @@ export const YUNTU_CHANNEL_TABLES = {
 }
 
 // 获取表实例 - 默认使用第一个表
-export const shippingTable = base(airtableConfig.tableId)
+export const shippingTable = base ? base(airtableConfig.tableId) : null
 
 // Airtable 记录类型定义（基于真实数据结构）
 export interface AirtableShippingRecord {
@@ -51,6 +54,11 @@ export class AirtableService {
   // 从指定表获取数据
   static async getChannelData(tableId: string, channelName: string): Promise<AirtableShippingRecord[]> {
     try {
+      if (!base) {
+        console.warn('Airtable not configured')
+        return []
+      }
+      
       const table = base(tableId)
       const records = await table
         .select({

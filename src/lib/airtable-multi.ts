@@ -110,7 +110,7 @@ function normalizeRecord(company: string, rawRecord: { id: string; createdTime: 
 }
 
 // 初始化 Airtable
-const apiKey = process.env.AIRTABLE_API_KEY!
+const apiKey = process.env.AIRTABLE_API_KEY || ''
 
 // 多Base Airtable服务
 export class MultiBaseAirtableService {
@@ -122,6 +122,11 @@ export class MultiBaseAirtableService {
     channelName: string
   ): Promise<AirtableShippingRecord[]> {
     try {
+      if (!apiKey) {
+        console.warn('Airtable API key not configured')
+        return []
+      }
+      
       const base = new Airtable({ apiKey }).base(baseId)
       const table = base(tableId)
 
@@ -170,6 +175,11 @@ export class MultiBaseAirtableService {
 
   // 获取所有物流公司的所有渠道数据
   static async getAllChannels(): Promise<AirtableShippingRecord[]> {
+    if (!apiKey) {
+      console.warn('Airtable API key not configured')
+      return []
+    }
+    
     const allRecords: AirtableShippingRecord[] = []
 
     // 串行获取每个物流公司的数据(避免并发太多)
