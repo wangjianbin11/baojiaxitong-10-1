@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
               if (index >= 5) return // 最多显示5个渠道
 
               const channel = DataTransformer.airtableToShippingChannel(record)
-              const result = DataTransformer.calculateShippingCost(packageInfo, channel)
+              const result = DataTransformer.calculateShippingCost(packageInfo, record)
 
               if (result) {
                 validQuotes++
@@ -143,10 +143,6 @@ ${context ? `用户当前页面上下文：${context}` : ''}`
       ],
       max_tokens: 800,
       temperature: 0.5, // 降低温度以获得更准确的答案
-      extra_headers: {
-        "HTTP-Referer": "http://localhost:3001",
-        "X-Title": "国际快递报价系统",
-      },
     })
 
     const aiResponse = completion.choices[0]?.message?.content || '抱歉，我现在无法回答这个问题。'

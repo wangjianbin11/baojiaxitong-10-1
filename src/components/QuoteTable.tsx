@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { QuoteResult, PackageInfo } from '@/types'
-import { translations, Language, getTranslation, translateCountry, translateTimeRange, translateCargoType } from '@/lib/translations'
+import { translations, getTranslation, translateCountry, translateTimeRange, translateCargoType } from '@/lib/translations'
 
 interface QuoteTableProps {
   results: QuoteResult[]
@@ -311,9 +312,11 @@ export default function QuoteTable({ results, packageInfo }: QuoteTableProps) {
                   <td className="px-4 py-3 text-center border-r font-semibold text-gray-800">{index + 1}</td>
                   <td className="px-4 py-3 text-center border-r">
                     {packageInfo?.productImage ? (
-                      <img
+                      <Image
                         src={packageInfo.productImage}
                         alt="产品图片"
+                        width={64}
+                        height={64}
                         className="w-16 h-16 object-cover rounded mx-auto border border-gray-300"
                       />
                     ) : (

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { QuoteResult, PackageInfo } from '@/types'
-import QuoteTable from './QuoteTable'
+// import QuoteTable from './QuoteTable'
 
 interface Product {
   id: string
@@ -118,9 +119,11 @@ export default function MultiProductQuote({ currentQuote, onClearCurrent }: Mult
                   <span className="text-lg font-bold text-gray-700">#{index + 1}</span>
 
                   {product.packageInfo.productImage && (
-                    <img
+                    <Image
                       src={product.packageInfo.productImage}
                       alt={`产品${index + 1}`}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 object-cover rounded border"
                     />
                   )}
@@ -234,9 +237,11 @@ function CombinedQuoteTable({ products, large = false }: { products: Product[], 
                 </td>
                 <td className={`${padding} text-center ${large ? 'border-2 border-gray-400' : 'border border-gray-300'}`}>
                   {product.packageInfo.productImage ? (
-                    <img
+                    <Image
                       src={product.packageInfo.productImage}
                       alt="产品"
+                      width={large ? 96 : 48}
+                      height={large ? 96 : 48}
                       className={`${imageSize} object-cover ${large ? 'rounded-lg border-4 border-blue-400 shadow-lg' : 'rounded border-2 border-gray-300'} mx-auto`}
                     />
                   ) : (

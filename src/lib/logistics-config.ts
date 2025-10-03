@@ -72,7 +72,7 @@ export function getCompanyByProductCode(productCode: string): string | null {
 
 // 获取物流公司的渠道
 export function getCompanyChannels(company: string): string[] {
-  return LOGISTICS_COMPANIES[company]?.channels || []
+  return (LOGISTICS_COMPANIES as Record<string, { channels: string[] }>)[company]?.channels || []
 }
 
 // 汇率配置

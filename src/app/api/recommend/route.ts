@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MultiBaseAirtableService } from '@/lib/airtable-multi'
 import { DataTransformer } from '@/lib/airtable'
+import { PackageInfo, QuoteResult } from '@/types'
 
 // OpenRouter AI 配置
 const OPENROUTER_API_KEY = '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'
 const OPENROUTER_MODEL = 'deepseek/deepseek-chat-v3-0324:free'
 
 // 使用 AI 分析包裹特征并提供推荐理由
-async function getAIRecommendation(packageInfo: any, topOptions: any[]) {
+async function getAIRecommendation(packageInfo: PackageInfo, topOptions: QuoteResult[]) {
   try {
     const prompt = `作为一名国际物流专家，请根据以下包裹信息和可选渠道，提供专业的物流推荐分析：
 
@@ -138,12 +139,12 @@ export async function POST(request: NextRequest) {
     }
 
     // 计算筛选后渠道的运费
-    const allQuotes: any[] = []
+    const allQuotes: QuoteResult[] = []
 
     for (const record of filteredRecords) {
       const result = DataTransformer.calculateShippingCost(packageInfo, record)
       if (result) {
-        allQuotes.push(result)
+        allQuotes.push(result as QuoteResult)
       }
     }
 

@@ -224,7 +224,7 @@ class LogisticsKnowledgeBase {
       if (data) {
         try {
           const entries = JSON.parse(data)
-          this.knowledge = new Map(entries.map(([id, item]: [string, any]) => [
+          this.knowledge = new Map(entries.map(([id, item]: [string, KnowledgeItem]) => [
             id,
             {
               ...item,

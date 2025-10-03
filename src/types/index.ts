@@ -48,8 +48,9 @@ export interface ShippingChannel {
 // 搜索筛选条件
 export interface SearchFilters {
   country?: string;
-  zone?: string;
+  company?: string;
   channelName?: string;
+  transportType?: string;
   cargoType?: CargoType;
 }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MultiBaseAirtableService } from '@/lib/airtable-multi'
 import { DataTransformer } from '@/lib/airtable'
+import { QuoteResult } from '@/types'
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,13 +41,13 @@ export async function POST(request: NextRequest) {
     console.log(`为国家 "${packageInfo.country}" 找到 ${records.length} 个渠道`)
 
     // 计算每个渠道的运费 - 使用新的正确算法
-    const quoteResults = []
+    const quoteResults: QuoteResult[] = []
     for (const record of records) {
       // 直接传入record，让计算函数内部处理重量匹配
       const result = DataTransformer.calculateShippingCost(packageInfo, record)
       if (result) {
         console.log(`渠道 ${result.channel.channelName}: ¥${result.totalShippingCNY.toFixed(2)} (含挂号费¥${result.registrationFeeCNY})`)
-        quoteResults.push(result)
+        quoteResults.push(result as QuoteResult)
       } else {
         // 如果没有结果，说明重量不在此区间
         const weightRange = record.fields['重量(KG)'] || ''
@@ -63,7 +64,10 @@ export async function POST(request: NextRequest) {
     // 标记最便宜、最快、推荐的渠道
     if (quoteResults.length > 0) {
       // 最便宜
-      quoteResults[0].isCheapest = true
+      const cheapest = quoteResults[0]
+      if (cheapest) {
+        cheapest.isCheapest = true
+      }
 
       // 最快（根据时效字符串的第一个数字判断）
       const sortedByTime = [...quoteResults].sort((a, b) => {
@@ -72,11 +76,15 @@ export async function POST(request: NextRequest) {
         return timeA - timeB
       })
       const fastest = quoteResults.find(r => r.channel.id === sortedByTime[0].channel.id)
-      if (fastest) fastest.isFastest = true
+      if (fastest) {
+        fastest.isFastest = true
+      }
 
       // 推荐渠道（来自数据库的推荐标记）
       const recommended = quoteResults.find(r => r.channel.isRecommended)
-      if (recommended) recommended.isRecommended = true
+      if (recommended) {
+        recommended.isRecommended = true
+      }
     }
 
     return NextResponse.json({

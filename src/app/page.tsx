@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import PackageForm from '@/components/PackageForm'
 import QuoteTable from '@/components/QuoteTable'
 import MultiProductQuote from '@/components/MultiProductQuote'
-import ExportTools from '@/components/ExportTools'
-import AIAssistant from '@/components/AIAssistant'
-import KnowledgeManager from '@/components/KnowledgeManager'
+// import ExportTools from '@/components/ExportTools'
+// import AIAssistant from '@/components/AIAssistant'
+// import KnowledgeManager from '@/components/KnowledgeManager'
 import { PackageInfo, QuoteResult } from '@/types'
 
 interface User {
@@ -23,7 +23,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null)
   const [packageInfo, setPackageInfo] = useState<PackageInfo | null>(null)
   const [quoteResults, setQuoteResults] = useState<QuoteResult[]>([])
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
   const [currentQuote, setCurrentQuote] = useState<{ packageInfo: PackageInfo; results: QuoteResult[] } | null>(null)
 
   // 检查登录状态

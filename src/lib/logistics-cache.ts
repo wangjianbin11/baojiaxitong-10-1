@@ -7,7 +7,7 @@ interface CacheItem<T> {
 }
 
 class LogisticsCache {
-  private cache = new Map<string, CacheItem<any>>()
+  private cache = new Map<string, CacheItem<unknown>>()
 
   // 设置缓存
   set<T>(key: string, data: T, ttl: number = 5 * 60 * 1000): void {

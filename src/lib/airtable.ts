@@ -60,7 +60,7 @@ export class AirtableService {
 
       return records.map(record => ({
         id: record.id,
-        createdTime: record.createdTime,
+        createdTime: (record as { createdTime?: string }).createdTime || new Date().toISOString(),
         fields: {
           ...record.fields,
           '物流公司': '云途物流',
@@ -265,7 +265,7 @@ export class DataTransformer {
     const weightRange = record.fields['重量(KG)'] || ''
     const pricePerKgCNY = record.fields['运费(RMB/KG)'] || 0
     const registrationFeeCNY = record.fields['挂号费(RMB/票)'] || 0
-    const minChargeWeight = record.fields['最低设备重(KG)'] || 0
+    const minChargeWeight = (record.fields as Record<string, unknown>)['最低设备重(KG)'] as number || 0
 
     // 检查重量是否在此区间内
     if (!DataTransformer.isWeightInRange(packageInfo.weight, weightRange)) {

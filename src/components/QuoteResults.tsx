@@ -68,7 +68,7 @@ export default function QuoteResults({ results, loading, packageInfo }: QuoteRes
           </svg>
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">暂无报价结果</h3>
-        <p className="text-gray-500">请填写包裹信息并点击"获取报价"按钮</p>
+        <p className="text-gray-500">请填写包裹信息并点击&ldquo;获取报价&rdquo;按钮</p>
       </div>
     )
   }

@@ -1,5 +1,5 @@
 import Airtable from 'airtable'
-import { LOGISTICS_BASES, getBaseConfig, getTableId } from './airtable-bases'
+import { LOGISTICS_BASES, getBaseConfig } from './airtable-bases'
 
 // Airtable 记录类型定义
 export interface AirtableShippingRecord {
@@ -71,7 +71,7 @@ const FIELD_MAPPINGS: Record<string, Record<string, string[]>> = {
 }
 
 // 字段值规范化函数
-function normalizeFieldValue(company: string, targetField: string, rawFields: any): any {
+function normalizeFieldValue(company: string, targetField: string, rawFields: Record<string, unknown>): unknown {
   const mapping = FIELD_MAPPINGS[company]
   if (!mapping || !mapping[targetField]) {
     return rawFields[targetField]
@@ -88,23 +88,23 @@ function normalizeFieldValue(company: string, targetField: string, rawFields: an
 }
 
 // 规范化记录字段
-function normalizeRecord(company: string, rawRecord: any, channelName?: string): AirtableShippingRecord {
+function normalizeRecord(company: string, rawRecord: { id: string; createdTime: string; fields: Record<string, unknown> }, channelName?: string): AirtableShippingRecord {
   const rawFields = rawRecord.fields
 
   return {
     id: rawRecord.id,
     createdTime: rawRecord.createdTime,
     fields: {
-      '国家/地区': normalizeFieldValue(company, '国家/地区', rawFields) || '',
-      '参考时效': normalizeFieldValue(company, '参考时效', rawFields) || '',
-      '重量(KG)': normalizeFieldValue(company, '重量(KG)', rawFields) || '',
-      '运费(RMB/KG)': normalizeFieldValue(company, '运费(RMB/KG)', rawFields) || 0,
-      '挂号费(RMB/票)': normalizeFieldValue(company, '挂号费(RMB/票)', rawFields) || 0,
-      '分区': normalizeFieldValue(company, '分区', rawFields),
-      '进位制(KG)': normalizeFieldValue(company, '进位制(KG)', rawFields) || rawFields['进位制(KG)'],
-      '最低计费重(KG)': normalizeFieldValue(company, '最低计费重(KG)', rawFields) || rawFields['最低计费重(KG)'],
+      '国家/地区': (normalizeFieldValue(company, '国家/地区', rawFields) as string) || '',
+      '参考时效': (normalizeFieldValue(company, '参考时效', rawFields) as string) || '',
+      '重量(KG)': (normalizeFieldValue(company, '重量(KG)', rawFields) as string) || '',
+      '运费(RMB/KG)': (normalizeFieldValue(company, '运费(RMB/KG)', rawFields) as number) || 0,
+      '挂号费(RMB/票)': (normalizeFieldValue(company, '挂号费(RMB/票)', rawFields) as number) || 0,
+      '分区': (normalizeFieldValue(company, '分区', rawFields) as string) || undefined,
+      '进位制(KG)': (normalizeFieldValue(company, '进位制(KG)', rawFields) as number) || (rawFields['进位制(KG)'] as number),
+      '最低计费重(KG)': (normalizeFieldValue(company, '最低计费重(KG)', rawFields) as number) || (rawFields['最低计费重(KG)'] as number),
       '物流公司': company,
-      '渠道': channelName || rawFields['渠道'] || ''
+      '渠道': channelName || (rawFields['渠道'] as string) || ''
     }
   }
 }
@@ -133,7 +133,11 @@ export class MultiBaseAirtableService {
 
       // 规范化每条记录，并添加公司和渠道信息
       return records.map(record => {
-        const normalized = normalizeRecord(company, record, channelName)
+        const normalized = normalizeRecord(company, {
+          id: record.id,
+          createdTime: (record as { createdTime?: string }).createdTime || new Date().toISOString(),
+          fields: record.fields
+        }, channelName)
         return normalized
       })
     } catch (error) {

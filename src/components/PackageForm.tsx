@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { PackageInfo, CargoType, VolumeFormula } from '@/types'
 
 interface PackageFormProps {
@@ -45,13 +46,20 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
     productImage: '',
   })
 
-  const [loading, setLoading] = useState(false)
+  const [loading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [imagePreview, setImagePreview] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 智能推荐状态
-  const [recommendation, setRecommendation] = useState<any>(null)
+  const [recommendation, setRecommendation] = useState<{
+    aiAnalysis?: string;
+    recommendations?: {
+      cheapest: { company: string; channel: string; country: string; priceCNY: string; reason: string; time: string };
+      fastest: { company: string; channel: string; country: string; priceCNY: string; reason: string; time: string };
+      recommended: { company: string; channel: string; country: string; priceCNY: string; reason: string; badge: string; time: string };
+    };
+  } | null>(null)
   const [recommendLoading, setRecommendLoading] = useState(false)
 
   // 获取物流公司列表
@@ -141,7 +149,7 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
     onSubmit(formData)
   }
 
-  const handleInputChange = (field: keyof PackageInfo, value: any) => {
+  const handleInputChange = (field: keyof PackageInfo, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
@@ -186,7 +194,7 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
   }
 
   // 应用推荐选择
-  const applyRecommendation = (rec: any) => {
+  const applyRecommendation = (rec: { company: string; channel: string; country: string }) => {
     setFormData(prev => ({
       ...prev,
       company: rec.company,
@@ -425,9 +433,11 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
           </button>
           {imagePreview && (
             <div className="relative flex-shrink-0">
-              <img
+              <Image
                 src={imagePreview}
                 alt="产品预览"
+                width={64}
+                height={64}
                 className="h-16 w-16 object-cover rounded-lg border-2 border-gray-300 shadow-sm"
               />
                 <button
@@ -556,7 +566,7 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* 最便宜 */}
             <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                 onClick={() => applyRecommendation(recommendation.recommendations.cheapest)}>
+                 onClick={() => recommendation.recommendations && applyRecommendation(recommendation.recommendations.cheapest)}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-green-700">💰 {recommendation.recommendations.cheapest.reason}</span>
                 <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">最省钱</span>
@@ -577,7 +587,7 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
 
             {/* 最快 */}
             <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                 onClick={() => applyRecommendation(recommendation.recommendations.fastest)}>
+                 onClick={() => recommendation.recommendations && applyRecommendation(recommendation.recommendations.fastest)}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-blue-700">⚡ {recommendation.recommendations.fastest.reason}</span>
                 <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">最快</span>
@@ -598,7 +608,7 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
 
             {/* 综合推荐 */}
             <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                 onClick={() => applyRecommendation(recommendation.recommendations.recommended)}>
+                 onClick={() => recommendation.recommendations && applyRecommendation(recommendation.recommendations.recommended)}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-purple-700">⭐ {recommendation.recommendations.recommended.badge}</span>
                 <span className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">性价比</span>
@@ -621,7 +631,7 @@ export default function PackageForm({ onSubmit }: PackageFormProps) {
 
         {!recommendation && !recommendLoading && (
           <div className="text-center py-8 text-gray-500">
-            <p>输入包裹信息后,点击"获取推荐"按钮</p>
+            <p>输入包裹信息后,点击&ldquo;获取推荐&rdquo;按钮</p>
             <p className="text-sm mt-1">系统将为您分析所有物流渠道,推荐最优方案</p>
           </div>
         )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { knowledgeBase, KnowledgeItem } from '@/lib/knowledgeBase'
 
 export default function KnowledgeManager() {
@@ -18,13 +18,7 @@ export default function KnowledgeManager() {
     keywords: ''
   })
 
-  useEffect(() => {
-    if (isOpen) {
-      loadKnowledge()
-    }
-  }, [isOpen, selectedCategory])
-
-  const loadKnowledge = () => {
+  const loadKnowledge = useCallback(() => {
     knowledgeBase.loadFromLocalStorage()
     const allKnowledge = knowledgeBase.getAllKnowledge()
     const cats = knowledgeBase.getCategories()
@@ -36,7 +30,13 @@ export default function KnowledgeManager() {
     } else {
       setKnowledge(knowledgeBase.getByCategory(selectedCategory))
     }
-  }
+  }, [selectedCategory])
+
+  useEffect(() => {
+    if (isOpen) {
+      loadKnowledge()
+    }
+  }, [isOpen, selectedCategory, loadKnowledge])
 
   const handleAdd = () => {
     if (formData.question && formData.answer && formData.category) {

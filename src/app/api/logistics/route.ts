@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { MultiBaseAirtableService } from '@/lib/airtable-multi'
+import { MultiBaseAirtableService, AirtableShippingRecord } from '@/lib/airtable-multi'
 import { getCompanyChannels, getAllCompanies as getAllCompaniesFromConfig } from '@/lib/airtable-bases'
 import { logisticsCache, CacheKeys } from '@/lib/logistics-cache'
 
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const channel = searchParams.get('channel')
 
     // 尝试从缓存获取数据库记录
-    let allRecords = logisticsCache.get<any[]>(CacheKeys.allRecords())
+    let allRecords = logisticsCache.get<AirtableShippingRecord[]>(CacheKeys.allRecords())
 
     if (!allRecords) {
       // 如果缓存中没有，从所有Base获取数据
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
       // 尝试从缓存获取
       const cacheKey = CacheKeys.countries(company, channel)
-      const cachedData = logisticsCache.get<any>(cacheKey)
+      const cachedData = logisticsCache.get<{ success: boolean; data: { company: string; channel: string; countries: string[]; zones: Record<string, string[]> } }>(cacheKey)
 
       if (cachedData) {
         console.log('从缓存返回国家数据')

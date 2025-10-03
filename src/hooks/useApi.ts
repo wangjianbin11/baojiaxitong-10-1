@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { PackageInfo, QuoteResult, ApiResponse, BaseData, QuoteResponse } from '@/types'
+import { PackageInfo, ApiResponse, BaseData, QuoteResponse } from '@/types'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api'
 

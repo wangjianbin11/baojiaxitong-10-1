@@ -63,7 +63,7 @@ initAdmin()
 export async function authenticateUser(phone: string, password: string): Promise<User | null> {
   // 通过手机号查找用户
   let foundUser = null
-  for (const [_, user] of users) {
+  for (const [, user] of users) {
     if (user.phone === phone) {
       foundUser = user
       break
@@ -97,7 +97,7 @@ export async function createUser(userData: {
   department?: string
 }): Promise<User> {
   // 检查手机号是否已存在
-  for (const [_, user] of users) {
+  for (const [, user] of users) {
     if (user.phone === userData.phone) {
       throw new Error('该手机号已被注册')
     }
@@ -131,7 +131,7 @@ export async function createUser(userData: {
 // 获取所有用户（管理员功能）
 export function getAllUsers(): User[] {
   const allUsers: User[] = []
-  for (const [_, user] of users) {
+  for (const [, user] of users) {
     const { password: _, ...userWithoutPassword } = user
     allUsers.push(userWithoutPassword)
   }

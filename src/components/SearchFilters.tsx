@@ -115,7 +115,7 @@ export default function SearchFilters() {
   const [searchHistory, setSearchHistory] = useState<SearchFiltersType[]>([])
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [baseData, setBaseData] = useState<BaseData | null>(null)
-  const [loadingData, setLoadingData] = useState(true)
+  const [, setLoadingData] = useState(true)
 
   // 获取基础数据
   useEffect(() => {
@@ -323,9 +323,9 @@ export default function SearchFilters() {
               <div className="mt-1 text-sm text-blue-700">
                 <p>点击右下角的AI助手按钮，您可以直接询问：</p>
                 <ul className="mt-1 list-disc list-inside text-xs">
-                  <li>"寄5kg普货到美国，哪个渠道最便宜？"</li>
-                  <li>"带电产品到德国有哪些渠道可选？"</li>
-                  <li>"最快到达日本的渠道是什么？"</li>
+                  <li>&ldquo;寄5kg普货到美国，哪个渠道最便宜？&rdquo;</li>
+                  <li>&ldquo;带电产品到德国有哪些渠道可选？&rdquo;</li>
+                  <li>&ldquo;最快到达日本的渠道是什么？&rdquo;</li>
                 </ul>
               </div>
             </div>

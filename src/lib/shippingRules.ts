@@ -429,7 +429,17 @@ export class QuotationEngine {
 }
 
 // 导出万邦速达专用格式报价表
-export function exportWANBQuotation(quotes: any[]): string {
+export function exportWANBQuotation(quotes: Array<{
+  productInfo?: { name?: string; quantity?: number; length?: number; width?: number; height?: number };
+  billableWeight?: number;
+  rule?: { country: string };
+  productCost?: number;
+  serviceFee?: number;
+  domesticShipping?: number;
+  shippingCost?: { totalCost: number };
+  timeRange?: string;
+  totalCost?: number;
+}>): string {
   const headers = [
     '序号', '产品图片', '产品名称', '颜色', '每包件数', '包装尺寸',
     '毛重', '国家', '订单处理时间', '产品成本', '服务费',
@@ -444,14 +454,14 @@ export function exportWANBQuotation(quotes: any[]): string {
     quote.productInfo?.quantity || 1,
     `${quote.productInfo?.length}*${quote.productInfo?.width}*${quote.productInfo?.height}cm`,
     `${quote.billableWeight}kg`,
-    quote.rule.country,
+    quote.rule?.country || '',
     '24 HOURS',
     `$${quote.productCost}`,
     `$${quote.serviceFee}`,
     `$${quote.domesticShipping}`,
-    `$${quote.shippingCost.totalCost}`,
+    `$${quote.shippingCost?.totalCost || 0}`,
     '$0',
-    quote.timeRange,
+    quote.timeRange || '',
     `$${quote.totalCost}`
   ])
 

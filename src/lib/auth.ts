@@ -25,17 +25,26 @@ export function generateToken(user: User): string {
 // 验证JWT Token
 export function verifyToken(token: string): User | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      id: string;
+      phone: string;
+      name: string;
+      role: string;
+      department?: string;
+      createdAt?: number;
+      exp?: number;
+      iat?: number;
+    }
     return {
       id: decoded.id,
       phone: decoded.phone,
       name: decoded.name,
-      role: decoded.role,
+      role: decoded.role as 'admin' | 'employee',
       department: decoded.department,
       createdAt: new Date(decoded.createdAt || Date.now()),
       isActive: true
     }
-  } catch (error) {
+  } catch {
     return null
   }
 }
